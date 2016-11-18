@@ -1,5 +1,7 @@
+from time import *
 import RPi.GPIO as GPIO
-print GPIO.VERSION
+import I2C_LCD_driver as LCDDriver #Usage: mylcd = LCDDriver.lcd(), mylcd.lcd_display_string(myString)
+
 
 btnUP =
 btnDown =
@@ -15,3 +17,4 @@ GPIO.setup(btnDown, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(btnLeft, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(btnRight, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
+ 
