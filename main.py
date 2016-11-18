@@ -1,6 +1,9 @@
 from time import *
 import RPi.GPIO as GPIO
 import I2C_LCD_driver as LCDDriver #Usage: mylcd = LCDDriver.lcd(), mylcd.lcd_display_string(myString)
+from ethjsonrpc import EthJsonRpc #Ethereun JSON RPC Lib
+
+c = EthJsonRpc('127.0.0.1', 8454) #Connect to local node
 
 
 btnUP =
