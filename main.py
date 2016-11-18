@@ -8,13 +8,19 @@ btnDown =
 btnLeft =
 btnRight =
 
+BTNs = [btnUp, btnDown, btnLeft, btnRight]
+BTN_States = [0]*4
+
 #Mode of pin numbering
 GPIO.setmode(GPIO.BCM)
 
 #Setup all pins
-GPIO.setup(btnUP, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.setup(btnDown, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.setup(btnLeft, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.setup(btnRight, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+for btn in BTNs:
+    GPIO.setup(btn, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
- 
+
+while True: #Main Loop
+    for btn in BTNs: #Get value of each button
+        BTN_States = GPIO.input(btn)
+    #TODO Char-control
+    
