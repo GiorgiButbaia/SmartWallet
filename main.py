@@ -3,16 +3,18 @@ import RPi.GPIO as GPIO
 import I2C_LCD_driver as LCDDriver #Usage: mylcd = LCDDriver.lcd(), mylcd.lcd_display_string(myString)
 from ethjsonrpc import EthJsonRpc #Ethereum JSON RPC Lib
 
+GPIO.cleanup() #Clean GPIO pins
+
 #Initialize externals
 c = EthJsonRpc('127.0.0.1', 8454) #Connect to local geth node
 disp = LCDDriver.lcd()
 #TODO configure Georgian characters for LCD
 
 #Name pins as variables
-btnUP =
-btnDown =
-btnLeft =
-btnRight =
+btnUP = 14
+btnDown = 15
+btnLeft = 18
+btnRight = 23
 
 #"Compactify"
 BTNs = [btnUp, btnDown, btnLeft, btnRight]
