@@ -9,7 +9,7 @@ GPIO.cleanup() #Clean GPIO pins
 GPIO.setmode(GPIO.BCM)
 
 #Initialize externals
-c = EthJsonRpc('127.0.0.1', 8454) #Connect to local geth node
+c = EthJsonRpc('127.0.0.1', 8545) #Connect to local geth node
 disp = LCDDriver.lcd()
 #TODO configure Georgian characters for LCD
 
@@ -57,7 +57,8 @@ def getCursor():
 
 #Chars
 abc123 = " 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-pwInput = [""]*6
+pwdLen = 8
+pwInput = [""]*pwdLen
 
 b = 0 #Selected Char index
 
@@ -94,7 +95,7 @@ while True: #Main Loop
            xPos = getCursor()[0]
            pwInput[xPos] = abc123[b]
            xPos -= 1
-           xPos = xPos % 6
+           xPos = xPos % pwdLen
            b = 0
            setCursor(xPos, getCursor()[1])
         #Right
@@ -102,9 +103,35 @@ while True: #Main Loop
            xPos = getCursor()[0]
            pwInput[xPos] = abc123[b]
            xPos += 1
-           xPos = xPos % 6
            b = 0
            setCursor(xPos, getCursor()[1])
+           if xPos > pwdLen - 1:
+               print "Password: %s" %(pwInput)
+               passAsk = False
+               lcdClear()
+               pwd = "" #Password buffer
+
+               #Notify user about the ongoing process
+               setCursor(0,0)
+               lcdPrint("Please wait")
+               lcdPrint("Authenticating...")
+               
+               for i in range(0, pwdLen): #Build String
+                   pwd += pwInput[i]
+               try: #Try to unlock account
+                   c.personal_unlockAccount(c.eth_accounts()[0], pwd, 10)
+
+                   #Reset password variables, for security reasons
+                   pwd = 0
+                   pwInput = [""]*pwdLen
+                   setCursor(0,0)
+                   lcdPrint("Authenticated!")
+               except:
+                   #Possibly incorrect password
+                   setCursor(0,0)
+                   lcdPrint("Nope...")
+                
+           xPos = xPos % pwdLen
         sleep(0.07)
         
     #Log previous states
