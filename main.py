@@ -19,19 +19,25 @@ btnDown = 15
 btnLeft = 18
 btnRight = 23
 
-#"Compactify"
-BTNs = [btnUp, btnDown, btnLeft, btnRight]
-BTN_States = [0]*4
-prev_BTN_States = [0]*4
+btnUp_STATE = 0
+btnDown_STATE = 0
+btnLeft_STATE = 0
+btnRight_STATE = 0
+
+prev_btnUp_STATE = 0
+prev_btnDown_STATE = 0
+prev_btnLeft_STATE = 0
+prev_btnRight_STATE = 0
 
 
 #Setup all pins
-for btn in BTNs:
-    GPIO.setup(btn, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(btnUp, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(btnDown, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(btnLeft, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(btnRight, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 #Global variables indicating current state
 passAsk = True #On password ask
-doClear = False #Clear LCD after each loop
 
 #Initial vector
 Cursor = [0, 0] #Cursor vector
@@ -56,17 +62,18 @@ pwInput = [""]*6
 b = 0 #Selected Char index
 
 lcdClear()
+setCursor(0,0)
+lcdPrint("Enter Password:")
+setCursor(0,1)
 while True: #Main Loop
-    for i in range(0, 4): #Get value of each button
-        BTN_States[i] = GPIO.input(BTNs[i])
+    btnUp_STATE = GPIO.input(btnUp)
+    btnDown_STATE = GPIO.input(btnDown)
+    btnLeft_STATE = GPIO.input(btnLeft)
+    btnRight_STATE = GPIO.input(btnRight)
 
     if passAsk: #Password input handler
-        setCursor(0,0)
-        lcdPrint("Enter Password:")
-        setCursor(0,1)
-        lcdPrint("------")
 	#Up
-        if BTN_States[0] == 1 and prev_BTN_states[0] == 0: #Trigger only if the derivative of the state w.r.t. time is positive
+        if btnUp_STATE == 1 and prev_btnUp_STATE == 0: #Trigger only if the derivative of the state w.r.t. time is positive
             b += 1
             #Cycle handler
             if b > 62:
@@ -74,9 +81,8 @@ while True: #Main Loop
             elif b < 0:
                 b = 62
             lcdPrint(abc123[b])
-            print "test"
 	#Down
-        if BTN_States[1] == 1 and prev_BTN_states[1] == 0:
+        if btnDown_STATE== 1 and prev_btnDown_STATE == 0:
             b -= 1
             if b > 62:
                 b = 0
@@ -84,7 +90,7 @@ while True: #Main Loop
                 b = 62
             lcdPrint(abc123[b])
         #Left
-        if BTN_States[2] == 1 and prev_BTN_states[2] == 0:
+        if btnLeft_STATE == 1 and prev_btnLeft_STATE == 0:
            xPos = getCursor()[0]
            pwInput[xPos] = abc123[b]
            xPos -= 1
@@ -92,15 +98,17 @@ while True: #Main Loop
            b = 0
            setCursor(xPos, getCursor()[1])
         #Right
-        if BTN_States[3] == 1 and prev_BTN_states[3] == 0:
+        if btnRight_STATE == 1 and prev_btnRight_STATE == 0:
            xPos = getCursor()[0]
            pwInput[xPos] = abc123[b]
            xPos += 1
+           xPos = xPos % 6
            b = 0
            setCursor(xPos, getCursor()[1])
-           if xPos == 6:
-               passAsk = False
+        sleep(0.07)
         
     #Log previous states
-    prev_BTN_states = BTN_States
-		
+    prev_btnUp_STATE = btnUp_STATE
+    prev_btnDown_STATE = btnDown_STATE
+    prev_btnLeft_STATE = btnLeft_STATE
+    prev_btnRight_STATE = btnRight_STATE
