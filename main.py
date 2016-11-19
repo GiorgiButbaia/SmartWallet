@@ -5,13 +5,16 @@ from ethjsonrpc import EthJsonRpc #Ethereum JSON RPC Lib
 
 GPIO.cleanup() #Clean GPIO pins
 
+#Mode of pin numbering
+GPIO.setmode(GPIO.BCM)
+
 #Initialize externals
 c = EthJsonRpc('127.0.0.1', 8454) #Connect to local geth node
 disp = LCDDriver.lcd()
 #TODO configure Georgian characters for LCD
 
 #Name pins as variables
-btnUP = 14
+btnUp = 14
 btnDown = 15
 btnLeft = 18
 btnRight = 23
@@ -21,17 +24,14 @@ BTNs = [btnUp, btnDown, btnLeft, btnRight]
 BTN_States = [0]*4
 prev_BTN_States = [0]*4
 
-#Mode of pin numbering
-GPIO.setmode(GPIO.BCM)
 
 #Setup all pins
 for btn in BTNs:
     GPIO.setup(btn, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-
 #Global variables indicating current state
-passAsk = False #On password ask
-doClear = True #Clear LCD after each loop
+passAsk = True #On password ask
+doClear = False #Clear LCD after each loop
 
 #Initial vector
 Cursor = [0, 0] #Cursor vector
@@ -55,21 +55,18 @@ pwInput = [""]*6
 
 b = 0 #Selected Char index
 
+lcdClear()
 while True: #Main Loop
-    if doClear:
-        lcdClear()
-    
-    for btn in BTNs: #Get value of each button
-        BTN_States = GPIO.input(btn)
+    for i in range(0, 4): #Get value of each button
+        BTN_States[i] = GPIO.input(BTNs[i])
 
     if passAsk: #Password input handler
-        lcdClear()
         setCursor(0,0)
         lcdPrint("Enter Password:")
         setCursor(0,1)
         lcdPrint("------")
 	#Up
-	if BTN_States[0] == 1 and prev_BTN_states[0] == 0: #Trigger only if the derivative of the state w.r.t. time is positive
+        if BTN_States[0] == 1 and prev_BTN_states[0] == 0: #Trigger only if the derivative of the state w.r.t. time is positive
             b += 1
             #Cycle handler
             if b > 62:
@@ -77,6 +74,7 @@ while True: #Main Loop
             elif b < 0:
                 b = 62
             lcdPrint(abc123[b])
+            print "test"
 	#Down
         if BTN_States[1] == 1 and prev_BTN_states[1] == 0:
             b -= 1
