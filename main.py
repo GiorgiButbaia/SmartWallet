@@ -106,15 +106,15 @@ while True: #Main Loop
            b = 0
            setCursor(xPos, getCursor()[1])
            if xPos > pwdLen - 1:
-               print "Password: %s" %(pwInput)
                passAsk = False
                lcdClear()
                pwd = "" #Password buffer
 
                #Notify user about the ongoing process
                setCursor(0,0)
-               lcdPrint("Please wait")
-               lcdPrint("Authenticating...")
+               lcdPrint("Please wait..")
+               setCursor(0,1)
+               lcdPrint("Authenticating")
                
                for i in range(0, pwdLen): #Build String
                    pwd += pwInput[i]
@@ -122,12 +122,16 @@ while True: #Main Loop
                    c.personal_unlockAccount(c.eth_accounts()[0], pwd, 10)
 
                    #Reset password variables, for security reasons
+                   lcdClear()
                    pwd = 0
                    pwInput = [""]*pwdLen
                    setCursor(0,0)
                    lcdPrint("Authenticated!")
+
+                   print c.eth_sendTransaction(to_address=c.eth_accounts()[0], from_address=c.eth_accounts()[0], value= 1000)
                except:
                    #Possibly incorrect password
+                   lcdClear()
                    setCursor(0,0)
                    lcdPrint("Nope...")
                 
