@@ -66,6 +66,8 @@ lcdClear()
 setCursor(0,0)
 lcdPrint("Enter Password:")
 setCursor(0,1)
+
+auth= False #Authenticated
 while True: #Main Loop
     btnUp_STATE = GPIO.input(btnUp)
     btnDown_STATE = GPIO.input(btnDown)
@@ -119,7 +121,7 @@ while True: #Main Loop
                for i in range(0, pwdLen): #Build String
                    pwd += pwInput[i]
                try: #Try to unlock account
-                   c.personal_unlockAccount(c.eth_accounts()[0], pwd, 10)
+                   print c.personal_unlockAccount(c.eth_accounts()[1], pwd, 10)
 
                    #Reset password variables, for security reasons
                    lcdClear()
@@ -127,14 +129,27 @@ while True: #Main Loop
                    pwInput = [""]*pwdLen
                    setCursor(0,0)
                    lcdPrint("Authenticated!")
-
-                   print c.eth_sendTransaction(to_address=c.eth_accounts()[0], from_address=c.eth_accounts()[0], value= 1000)
+                   auth= True #Authentication succesful
                except:
                    #Possibly incorrect password
                    lcdClear()
                    setCursor(0,0)
                    lcdPrint("Nope...")
-                
+               if auth:
+                   try:
+                      c.eth_sendTransaction(to_address=c.eth_accounts()[0], from_address=c.eth_accounts()[1], value= 1000)
+                      lcdClear()
+                      lcd.setCursor(0,0)
+                      lcdPrint("Transaction")
+                      lcd.setCursro(0,1)
+                      lcdPrint("Sucessful")
+                   except:
+                      lcdClear()
+                      setCursor(0,0)
+                      lcdPrint("Failed")
+                      setCursor(0,1)
+                      lcdPrint("Insufficient balance")
+                   auth=False
            xPos = xPos % pwdLen
         sleep(0.07)
         
